@@ -9,13 +9,11 @@ End-to-end deep learning pipeline for pricing and calibrating European options u
 ## Project Structure
 
 ```
-├── 1a_MC_heston.ipynb          # Part 1a — Heston Monte Carlo simulator & dataset generation
-├── 1b_MLP_pricer.ipynb         # Part 1b — MLP surrogate pricer training & evaluation
-├── 2_Calibartion_with_NN.ipynb # Part 2  — NN-based Heston calibration from a price surface
-├── 1a_mc_heston.py             # Script version of Part 1a
-├── 1b_mlp_pricer.py            # Script version of Part 1b
-├── 2_calibartion_with_nn.py    # Script version of Part 2
-└── A17471E2 Deep Learning 2025_26.pdf  # Exam problem statement
+├── 1a_heston_monte_carlo_simulation.ipynb   # Part 1a — Heston MC simulator & dataset generation
+├── 1b_heston_mlp_surrogate_pricer.ipynb     # Part 1b — MLP surrogate pricer training & evaluation
+├── 2_heston_calibration_neural_network.ipynb # Part 2  — NN-based calibration from a price surface
+├── consigne.pdf                              # Exam problem statement
+└── report.pdf                               # Submitted exam report
 ```
 
 ---
