@@ -1,6 +1,6 @@
 # Heston Neural Pricer & Calibration
 
-**Oxford MCF — Deep Learning (A17471E2) | March 2025**
+**Oxford Mathematical and Computational Finance — Deep Learning | March 2025**
 
 End-to-end deep learning pipeline for pricing and calibrating European options under the Heston stochastic volatility model. The project is structured in three sequential parts: Monte Carlo dataset generation, neural network surrogate training, and gradient-based calibration using the surrogate as a differentiable pricer.
 
