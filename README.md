@@ -18,9 +18,27 @@ End-to-end deep learning pipeline for pricing and calibrating European options u
 
 ---
 
+## Motivation — Why a Neural Network Pricer?
+
+Pricing a single option under the Heston model via Monte Carlo requires simulating thousands of stochastic paths, each with hundreds of time steps. A single price evaluation takes on the order of seconds on CPU. This is manageable for one-off pricing, but becomes a hard bottleneck in two practical situations:
+
+**1. Calibration.** Fitting the Heston model to a market surface (say, 100+ observed option prices) requires solving a non-linear least-squares problem over 5 parameters. Each iteration of the optimizer calls the pricer once per contract. With a gradient-free solver, this means thousands of MC evaluations — each noisy and slow. The calibration can take minutes to hours, and MC noise corrupts the gradient signal.
+
+**2. Real-time or large-scale pricing.** Risk systems, trading desks, and scenario engines need to reprice entire books — potentially millions of contracts per day — with consistent parameters. MC is simply too slow for this.
+
+The neural network surrogate solves both problems at once. Once trained offline on a large synthetic dataset, the MLP evaluates in microseconds per contract and is fully differentiable. This unlocks:
+
+- **Gradient-based calibration**: backpropagate directly through the pricer to compute $\partial \mathcal{L} / \partial \theta$ analytically, replacing noisy finite-difference gradients with exact ones. Calibration converges faster and more reliably.
+- **Instant inference**: after calibration, reprice any contract in the parameter neighborhood at negligible cost.
+- **Scalability**: batch evaluation on GPU handles millions of contracts simultaneously.
+
+The trade-off is approximation error — the NN is not the exact Heston price. The key question this project addresses is whether that error is small enough to be acceptable in practice (spoiler: median relative error on ITM/ATM contracts is well below 1%).
+
+---
+
 ## Part 1a — Monte Carlo Heston Simulator
 
-**Notebook:** `1a_MC_heston.ipynb`
+**Notebook:** `1a_heston_monte_carlo_simulation.ipynb`
 
 The Heston model describes the joint dynamics of the asset price $S_t$ and its instantaneous variance $Y_t$:
 
@@ -58,7 +76,7 @@ $$dY_t = \kappa(\mu - Y_t) \, dt + \sigma \sqrt{Y_t} \, dW_t^2, \quad d\langle W
 
 ## Part 1b — MLP Surrogate Pricer
 
-**Notebook:** `1b_MLP_pricer.ipynb`
+**Notebook:** `1b_heston_mlp_surrogate_pricer.ipynb`
 
 Trains a feedforward neural network to approximate the Heston pricing function $\hat{P}(S_0, Y_0, \kappa, \mu, \sigma, r, \rho, K, T)$, replacing expensive Monte Carlo calls at inference time.
 
@@ -90,7 +108,7 @@ Three additional architectures are benchmarked: Small (256→128→64), Large (5
 
 ## Part 2 — Neural Network Calibration
 
-**Notebook:** `2_Calibartion_with_NN.ipynb`
+**Notebook:** `2_heston_calibration_neural_network.ipynb`
 
 Uses the trained MLP surrogate as a **differentiable pricing oracle** to recover the 5 latent Heston parameters $(\kappa, \mu, \sigma, r, \rho)$ from an observed option price surface via gradient-based optimization.
 
